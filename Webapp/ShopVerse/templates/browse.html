@@ -1,0 +1,535 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopVerse - Categories</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+        background-color: #f0f7ff;
+        color: #1E293B;
+        }
+        
+        .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        }
+        
+        /* Main Layout */
+        .browse-container {
+        display: flex;
+        gap: 30px;
+        min-height: 600px;
+        }
+        
+        /* Categories Sidebar */
+        .categories-sidebar {
+        width: 280px;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        flex-shrink: 0;
+        }
+        
+        .sidebar-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #1E293B;
+        }
+        
+        .categories-list {
+        list-style: none;
+        }
+        
+        .category-item {
+        margin-bottom: 5px;
+        }
+        
+        .category-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #1E293B;
+        font-weight: 500;
+        transition: background-color 0.3s;
+        }
+        
+        .category-main:hover {
+        background-color: #F1F5F9;
+        }
+        
+        .category-main.active {
+        background-color: #9333EA;
+        color: white;
+        }
+        
+        .category-main i.category-icon {
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+        margin-right: 10px;
+        }
+        
+        .category-main i.toggle-icon {
+        font-size: 14px;
+        transition: transform 0.3s;
+        }
+        
+        .category-main.expanded i.toggle-icon {
+        transform: rotate(180deg);
+        }
+        
+        .subcategories {
+        list-style: none;
+        padding-left: 34px;
+        margin-top: 5px;
+        display: none;
+        }
+        
+        .subcategories.show {
+        display: block;
+        }
+        
+        .subcategory-item {
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #64748B;
+        font-size: 14px;
+        transition: all 0.3s;
+        }
+        
+        .subcategory-item:hover {
+        background-color: #F1F5F9;
+        color: #1E293B;
+        }
+        
+        .subcategory-item.active {
+        background-color: #F1F5F9;
+        color: #9333EA;
+        font-weight: 500;
+        }
+        
+        /* Products Section */
+        .products-section {
+        flex-grow: 1;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        }
+        
+        .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        }
+        
+        .section-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1E293B;
+        }
+        
+        .sort-dropdown {
+        padding: 10px 15px;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #64748B;
+        background-color: white;
+        cursor: pointer;
+        }
+        
+        .sort-dropdown:focus {
+        outline: none;
+        border-color: #9333EA;
+        }
+        
+        .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        }
+        
+        .product-card {
+        background-color: #F8FAFC;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+        height: 160px;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+        
+        .product-image i {
+        font-size: 50px;
+        color: #9333EA;
+        }
+        
+        .product-info {
+        padding: 15px;
+        }
+        
+        .product-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1E293B;
+        }
+        
+        .product-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: #9333EA;
+        margin-bottom: 12px;
+        }
+        
+        .product-description {
+        font-size: 14px;
+        color: #64748B;
+        margin-bottom: 15px;
+        line-height: 1.4;
+        }
+        
+        .add-to-cart {
+        width: 100%;
+        padding: 10px;
+        background-color: #9333EA;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        }
+        
+        .add-to-cart:hover {
+        background-color: #7E22CE;
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+        .browse-container {
+            flex-direction: column;
+        }
+        
+        .categories-sidebar {
+            width: 100%;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        }
+        
+        @media (max-width: 600px) {
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .sort-dropdown {
+            width: 100%;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+        }
+
+        #all-categories-btn {
+            background-color: #9333EA;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            width: fit-content;
+            margin-bottom: 20px;
+        }
+
+        #all-categories-btn:hover {
+            background-color: #7E22CE;
+            transform: translateY(-2px);
+        }
+
+        #all-categories-btn .category-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        #all-categories-btn span {
+            font-size: 16px;
+        }
+
+        .product-image {
+            width: 100%;              
+            height: 200px;             
+            background-color: white;
+            display: flex;
+            align-items: center;       
+            justify-content: center;   
+            margin-bottom: 15px;       
+            overflow: hidden;          
+            box-sizing: border-box;
+            border-radius: 15px;       
+        }
+
+        .product-card:hover .product-image {
+            border: 2px solid black; 
+        }
+        
+        .product-image img {
+            width: 100%;               
+            height: 100%;               
+            object-fit: cover;          
+            border-radius: 15px;         
+        }
+        
+        
+        
+    </style>
+</head>
+<body>
+    <!-- Hidden form to submit the selected category/subcategory -->
+    <form id="category-form" method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="selected_category" id="selected-category" value="{{ selected_category|default:'fashion' }}">
+        <input type="hidden" name="selected_subcategory" id="selected-subcategory" value="{{ selected_subcategory|default:'shoes' }}">
+    </form>
+
+    <div class="container">
+        <div class="browse-container">
+        <!-- Categories Sidebar -->
+        <div class="categories-sidebar">
+            <h2 class="sidebar-title">Categories</h2>
+
+            <!-- Button for All Categories -->
+            <button class="category-main" id="all-categories-btn">
+                <div>
+                    <i class="fas fa-list category-icon"></i>
+                    <span>All Categories</span>
+                </div>
+            </button>
+            
+            <ul class="categories-list">
+            <!-- Fashion Category -->
+            <li class="category-item">
+                <div class="category-main {% if selected_category == 'fashion' %}active expanded{% endif %}" data-category="fashion">
+                <div>
+                    <i class="fas fa-tshirt category-icon"></i>
+                    <span>Fashion</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <ul class="subcategories {% if selected_category == 'fashion' %}show{% endif %}">
+                <li class="subcategory-item {% if selected_subcategory == 'shoes' %}active{% endif %}" data-subcategory="shoes">Shoes</li>
+                <li class="subcategory-item {% if selected_subcategory == 'clothes' %}active{% endif %}" data-subcategory="clothes">Clothes</li>
+                <li class="subcategory-item {% if selected_subcategory == 'accessories' %}active{% endif %}" data-subcategory="accessories">Accessories</li>
+                <li class="subcategory-item {% if selected_subcategory == 'bags' %}active{% endif %}" data-subcategory="bags">Bags</li>
+                </ul>
+            </li>
+            
+            <!-- Electronics Category -->
+            <li class="category-item">
+                <div class="category-main {% if selected_category == 'electronics' %}active expanded{% endif %}" data-category="electronics">
+                <div>
+                    <i class="fas fa-laptop category-icon"></i>
+                    <span>Electronics</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <ul class="subcategories {% if selected_category == 'electronics' %}show{% endif %}">
+                <li class="subcategory-item {% if selected_subcategory == 'phones' %}active{% endif %}" data-subcategory="phones">Phones</li>
+                <li class="subcategory-item {% if selected_subcategory == 'laptops' %}active{% endif %}" data-subcategory="laptops">Laptops</li>
+                <li class="subcategory-item {% if selected_subcategory == 'audio' %}active{% endif %}" data-subcategory="audio">Audio</li>
+                <li class="subcategory-item {% if selected_subcategory == 'accessories' %}active{% endif %}" data-subcategory="accessories">Accessories</li>
+                </ul>
+            </li>
+            
+            <!-- Home & Living Category -->
+            <li class="category-item">
+                <div class="category-main {% if selected_category == 'home' %}active expanded{% endif %}" data-category="home">
+                <div>
+                    <i class="fas fa-home category-icon"></i>
+                    <span>Home & Living</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <ul class="subcategories {% if selected_category == 'home' %}show{% endif %}">
+                <li class="subcategory-item {% if selected_subcategory == 'furniture' %}active{% endif %}" data-subcategory="furniture">Furniture</li>
+                <li class="subcategory-item {% if selected_subcategory == 'decor' %}active{% endif %}" data-subcategory="decor">Decor</li>
+                <li class="subcategory-item {% if selected_subcategory == 'bedding' %}active{% endif %}" data-subcategory="bedding">Bedding</li>
+                <li class="subcategory-item {% if selected_subcategory == 'lighting' %}active{% endif %}" data-subcategory="lighting">Lighting</li>
+                </ul>
+            </li>
+            
+            <!-- Kitchen Category -->
+            <li class="category-item">
+                <div class="category-main {% if selected_category == 'kitchen' %}active expanded{% endif %}" data-category="kitchen">
+                <div>
+                    <i class="fas fa-utensils category-icon"></i>
+                    <span>Kitchen</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>
+                <ul class="subcategories {% if selected_category == 'kitchen' %}show{% endif %}">
+                <li class="subcategory-item {% if selected_subcategory == 'appliances' %}active{% endif %}" data-subcategory="appliances">Appliances</li>
+                <li class="subcategory-item {% if selected_subcategory == 'cookware' %}active{% endif %}" data-subcategory="cookware">Cookware</li>
+                <li class="subcategory-item {% if selected_subcategory == 'tableware' %}active{% endif %}" data-subcategory="tableware">Tableware</li>
+                <li class="subcategory-item {% if selected_subcategory == 'utensils' %}active{% endif %}" data-subcategory="utensils">Utensils</li>
+                </ul>
+            </li>
+            </ul>
+        </div>
+      
+        <!-- Products Section -->
+        <div class="products-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    {% if selected_category and selected_subcategory %}
+                        {{ selected_category|title }} - {{ selected_subcategory|title }}
+                    {% else %}
+                        All Categories
+                    {% endif %}
+                </h2>
+                <select class="sort-dropdown">
+                    <option value="popular">Most Popular</option>
+                    <option value="newest">Newest</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                </select>
+            </div>
+            
+            <div class="products-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="{% static 'images/'|add:product.7 %}" alt="Shopping illustration">
+                            {% comment %} <i class="fas fa-shoe-prints"></i> <!-- You can replace this with an actual image --> {% endcomment %}
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">{{ product.4 }}</h3> <!-- Product Name (index 4) -->
+                            <p class="product-price">${{ product.6 }}</p> <!-- Product Price (index 6) -->
+                            <p class="product-description">{{ product.5 }}</p> <!-- Product Description (index 5) -->
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No products available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+
+    <script>
+        // CATEGORY SELECTION & FORM UPDATE
+
+        // When a category header is clicked:
+        document.querySelectorAll('.category-main').forEach(function(categoryElement) {
+        categoryElement.addEventListener('click', function() {
+            // Remove active and expanded classes from all category elements
+            document.querySelectorAll('.category-main').forEach(function(el) {
+            el.classList.remove('active', 'expanded');
+            var sublist = el.nextElementSibling;
+            if (sublist && sublist.classList.contains('subcategories')) {
+                sublist.classList.remove('show');
+            }
+            });
+            // Mark the clicked category as active and show/hide its subcategories
+            this.classList.add('active');
+            var sublist = this.nextElementSibling;
+            if (sublist && sublist.classList.contains('subcategories')) {
+            if (this.classList.contains('expanded')) {
+                this.classList.remove('expanded');
+                sublist.classList.remove('show');
+            } else {
+                this.classList.add('expanded');
+                sublist.classList.add('show');
+            }
+            }
+            // Update the hidden field for selected category and clear any subcategory selection
+            var selectedCat = this.getAttribute('data-category');
+            document.getElementById('selected-category').value = selectedCat;
+            document.getElementById('selected-subcategory').value = '';
+        });
+        });
+        
+        // When a subcategory is clicked:
+        document.querySelectorAll('.subcategory-item').forEach(function(subcategoryElement) {
+        subcategoryElement.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent the category click from firing
+            // Remove active class from sibling subcategories
+            var siblings = this.parentElement.querySelectorAll('.subcategory-item');
+            siblings.forEach(function(el) {
+            el.classList.remove('active');
+            });
+            // Mark the clicked subcategory as active
+            this.classList.add('active');
+            // Update the hidden field for selected subcategory
+            document.getElementById('selected-subcategory').value = this.getAttribute('data-subcategory');
+            // Submit the form to send the CSRF token with selected category and subcategory
+            document.getElementById('category-form').submit();
+        });
+        });
+    </script>
+
+    <!-- Script to handle "All Categories" button functionality -->
+    <script>
+        document.getElementById('all-categories-btn').addEventListener('click', function() {
+            // Reset the category and subcategory values
+            const categoryInput = document.getElementById('selected-category');
+            const subcategoryInput = document.getElementById('selected-subcategory');
+            
+            categoryInput.value = ''; // Reset category
+            subcategoryInput.value = ''; // Reset subcategory
+            
+            // Submit the form to reload the page with all products
+            document.getElementById('category-form').submit();
+        });
+    </script>
+</body>
+</html>
