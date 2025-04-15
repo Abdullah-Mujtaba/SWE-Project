@@ -162,6 +162,51 @@ def seller_view(request, id):
 
 
 def add_product_view(request):
-    seller_id = request.GET.get('id')
-    print(seller_id)
-    return render(request, 'add_product.html', {'id': seller_id})
+    if request.method == 'POST':
+        # Retrieve seller id from the form data
+        seller_id = request.POST.get('seller_id')
+        print(seller_id)
+        name = request.POST.get('product_name')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        category = request.POST.get('category')
+        subcategory = request.POST.get('subcategory')
+        uploaded_file = request.FILES.get('image')
+        if not uploaded_file:
+            messages.error(request, "No image file uploaded.")
+            return render(request, 'add_product.html', {'id': seller_id})
+        image_name = uploaded_file.name
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT CategoryID FROM Category WHERE CategoryName = %s
+                """, [category])
+                CategoryID = cursor.fetchone()
+                
+                cursor.execute("""
+                    SELECT SubCategoryID FROM SubCategory WHERE SubCategoryName = %s
+                """, [subcategory])
+                SubCategoryID = cursor.fetchone()
+                
+                cursor.execute("""
+                    INSERT INTO Products (SellerID, CategoryID, SubCategoryID, Name, Description, Price, Image)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, [seller_id, CategoryID[0], SubCategoryID[0], name, description, price, image_name])
+                
+                print("Product added successfully!")
+                messages.success(request, "Product added successfully!")
+        except IntegrityError:
+            messages.error(request, "An error occurred while adding the product. Please try again.")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+        
+        # Optionally, render a redirect or re-render the add product page
+        return redirect('seller_page', id=seller_id)
+    else:
+        # For GET, get the seller id from the query parameter and pass it to the template.
+        seller_id = request.GET.get('id')
+        print(seller_id)
+        return render(request, 'add_product.html', {'id': seller_id})
+
+    
