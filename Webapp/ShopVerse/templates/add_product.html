@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopVerse - Add Product</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    body {
+      background-color: #f0f7ff;
+      color: #1E293B;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .form-section {
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+    }
+    
+    .section-header {
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    
+    .back-btn {
+      background-color: transparent;
+      color: #9333EA;
+      border: 2px solid #9333EA;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      text-decoration: none;
+      width: fit-content;
+      display: inline-block;
+    }
+    
+    .back-btn:hover {
+      background-color: #9333EA;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1E293B;
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .submit-btn {
+      background-color: #9333EA;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .submit-btn:hover {
+      background-color: #7E22CE;
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .section-header {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-section">
+      <div class="section-header">
+        {% comment %} <a href="{% url 'seller_page' id=request.id %}" class="back-btn"> {% endcomment %}
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h2 class="section-title">Add New Product</h2>
+      </div>
+      <form action="{% url 'add_product' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="product-name">Product Name</label>
+          <input type="text" id="product-name" name="product_name" placeholder="Enter product name" required>
+        </div>
+        <div class="form-group">
+          <label for="product-category">Category</label>
+          <select id="product-category" name="category" required>
+            <option value="">Select Category</option>
+            <option value="fashion">Fashion</option>
+            <option value="electronics">Electronics</option>
+            <option value="home">Home &amp; Living</option>
+            <option value="kitchen">Kitchen</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="product-subcategory">Subcategory</label>
+          <select id="product-subcategory" name="subcategory" required>
+            <option value="">Select Subcategory</option>
+            <!-- Populate subcategories as needed -->
+            <option value="shoes">Shoes</option>
+            <option value="clothes">Clothes</option>
+            <option value="accessories">Accessories</option>
+            <option value="bags">Bags</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="product-price">Price ($)</label>
+          <input type="number" id="product-price" name="price" step="0.01" placeholder="Enter product price" required>
+        </div>
+        <div class="form-group">
+          <label for="product-stock">Stock</label>
+          <input type="number" id="product-stock" name="stock" placeholder="Enter available stock" required>
+        </div>
+        <div class="form-group">
+          <label for="product-description">Product Description</label>
+          <textarea id="product-description" name="description" placeholder="Enter product description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="product-image">Product Image</label>
+          <input type="file" id="product-image" name="image" required>
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-plus"></i> Add Product
+        </button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

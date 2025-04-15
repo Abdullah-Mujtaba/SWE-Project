@@ -97,7 +97,10 @@ def login_view(request):
                 
             if row:
                 UserID, name, email , password, role, store_name = row
-                return redirect('browse_page')
+                if(role == 'seller'):
+                    return redirect('seller_page',id = UserID)
+                elif(role == 'customer'):
+                    return redirect('browse_page')
             else:
                 messages.error(request, "Invalid username or password. Please try again.")
         
@@ -135,3 +138,30 @@ def register_view(request):
             messages.error(request, f"An error occurred: {str(e)}")
     
     return render(request, 'register.html')
+
+def seller_view(request, id):
+    print("hi")
+    if request.method == 'GET':
+        print("bye")
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT * FROM Products  
+                    WHERE SellerID = %s
+                """, [id])
+                products = cursor.fetchall()
+                print(products)
+            messages.success(request, "Product added successfully!")
+        except IntegrityError:
+            messages.error(request, "An error occurred while adding the product. Please try again.")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+    
+    # Add 'user_id' in the context so the template can use it
+    return render(request, 'seller.html', {'products': products, 'user_id': id})
+
+
+def add_product_view(request):
+    seller_id = request.GET.get('id')
+    print(seller_id)
+    return render(request, 'add_product.html', {'id': seller_id})

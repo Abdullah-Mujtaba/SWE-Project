@@ -16,3 +16,9 @@ def register_page(request):
 
 def browse_page(request):
     return browse_view(request)
+
+def seller_page(request,id):
+    return seller_view(request,id)
+
+def add_product(request):
+    return add_product_view(request)
