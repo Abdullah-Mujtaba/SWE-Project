@@ -1,0 +1,255 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopVerse – Checkout</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    body {
+      background-color: #f0f7ff;
+      color: #1E293B;
+    }
+    .container {
+      max-width: 1400px; margin: 0 auto; padding: 40px 20px;
+    }
+    h1.section-title {
+      font-size: 28px; font-weight: 600; margin-bottom: 30px;
+    }
+    .checkout-container {
+      display: flex; gap: 30px; align-items: flex-start;
+    }
+    .items-section {
+      flex: 1;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background-color: #F8FAFC;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .product-image {
+      width: 100%; height: 200px;
+      background-color: white;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; border-radius: 15px;
+    }
+    .product-image img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 15px;
+    }
+    .product-info { padding: 15px; }
+    .product-name {
+      font-size: 16px; font-weight: 600; margin-bottom: 8px;
+    }
+    .product-price {
+      font-size: 18px; font-weight: 700; color: #9333EA; margin-bottom: 12px;
+    }
+    .product-description {
+      font-size: 14px; color: #64748B; margin-bottom: 12px;
+    }
+    .quantity-control {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .quantity-control button {
+      width: 28px; height: 28px; border: none; border-radius: 4px;
+      background-color: #E2E8F0; cursor: pointer; font-size: 18px; line-height: 1;
+    }
+    .quantity-control input {
+      width: 40px; text-align: center; border: 1px solid #E2E8F0; border-radius: 4px;
+      font-size: 14px; padding: 4px;
+    }
+    .remove-item {
+      background: transparent; border: none; color: #DC2626; cursor: pointer;
+      font-size: 14px; margin-left: auto; display: block;
+    }
+    /* Summary Section */
+    .summary-section {
+      width: 300px;
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 30px;
+    }
+    .summary-section h3 {
+      font-size: 20px; font-weight: 600; margin-bottom: 20px;
+    }
+    .summary-item {
+      display: flex; justify-content: space-between;
+      margin-bottom: 12px; font-size: 14px;
+    }
+    .summary-total {
+      display: flex; justify-content: space-between;
+      font-weight: 700; font-size: 18px;
+      margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 15px;
+    }
+    .checkout-btn {
+      background-color: #9333EA;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 25px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .checkout-btn:hover {
+      background-color: #7E22CE;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 800px) {
+      .checkout-container { flex-direction: column; }
+      .summary-section { width: 100%; margin-top: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="section-title">Checkout</h1>
+
+    <div class="checkout-container">
+
+      <!-- Items in Cart -->
+      <div class="items-section">
+        <div class="products-grid">
+          {% for product in cart_products %}
+            <div class="product-card" data-product-id="{{ product.id }}">
+              <div class="product-image">
+                <img src="{% static 'images/'|add:product.image %}" alt="{{ product.name }}">
+              </div>
+              <div class="product-info">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-price">${{ product.price }}</p>
+                <p class="product-description">{{ product.description }}</p>
+
+                <div class="quantity-control">
+                  <button class="qty-decrease" type="button">−</button>
+                  <input type="text" class="qty-input" value="{{ product.quantity }}" readonly>
+                  <button class="qty-increase" type="button">+</button>
+                </div>
+
+                <button class="remove-item" type="button">Remove</button>
+              </div>
+            </div>
+          {% empty %}
+            <p>No items in your cart.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Order Summary & Place Order -->
+      <div class="summary-section">
+        <h3>Order Summary</h3>
+        <div id="summary-items">
+          {% for item in cart_products %}
+            <div class="summary-item" data-product-id="{{ item.id }}">
+              <span>{{ item.name }} ×{{ item.quantity }}</span>
+              <span class="item-total">${{ item.price|floatformat:2 }}</span>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="summary-total">
+          <span>Total</span>
+          <span id="summary-total-amount">${{ total|floatformat:2 }}</span>
+        </div>
+
+        <!-- restored correct form tag -->
+        <form id="checkout-form" action="{% url 'checkout' %}" method="post">
+          {% csrf_token %}
+          <input
+            type="hidden"
+            name="cart_data"
+            id="cart_data"
+            value='{{ cart_data_json|escapejs }}'
+          >
+          <button
+            type="button"
+            id="finalize-btn"
+            class="checkout-btn"
+          >Place Order</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let cart = JSON.parse(document.getElementById('cart_data').value);
+
+      document.querySelectorAll('.qty-decrease').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = btn.nextElementSibling;
+          let val = parseInt(input.value, 10);
+          if (val > 1) {
+            input.value = --val;
+            const pid = btn.closest('.product-card').dataset.productId;
+            cart.find(x => x.id == pid).quantity = val;
+            recalcSummary();
+          }
+        });
+      });
+
+      document.querySelectorAll('.qty-increase').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = btn.previousElementSibling;
+          let val = parseInt(input.value, 10);
+          input.value = ++val;
+          const pid = btn.closest('.product-card').dataset.productId;
+          cart.find(x => x.id == pid).quantity = val;
+          recalcSummary();
+        });
+      });
+
+      document.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.product-card');
+          const pid = card.dataset.productId;
+          card.remove();
+          cart = cart.filter(x => x.id != pid);
+          const sumEl = document.querySelector(`.summary-item[data-product-id="${pid}"]`);
+          if (sumEl) sumEl.remove();
+          recalcSummary();
+        });
+      });
+
+      function recalcSummary() {
+        let total = 0;
+        document.querySelectorAll('.summary-item').forEach(div => {
+          const pid = div.dataset.productId;
+          const entry = cart.find(x => x.id == pid);
+          const price = parseFloat(div.querySelector('.item-total').textContent.replace('$',''));
+          const line = (price * entry.quantity).toFixed(2);
+          div.querySelector('span:last-child').textContent = '$' + line;
+          total += parseFloat(line);
+        });
+        document.getElementById('summary-total-amount').textContent = '$' + total.toFixed(2);
+      }
+
+      document.getElementById('finalize-btn').addEventListener('click', () => {
+        document.getElementById('cart_data').value = JSON.stringify(cart);
+        document.getElementById('checkout-form').submit();
+      });
+    });
+  </script>
+</body>
+</html>

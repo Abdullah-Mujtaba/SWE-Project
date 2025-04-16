@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
+import json
 
 
 
@@ -99,7 +100,7 @@ def login_view(request):
                 UserID, name, email , password, role, store_name = row
                 if(role == 'seller'):
                     return redirect('seller_page',id = UserID)
-                elif(role == 'customer'):
+                elif(role == 'customer' or role == 'user'):
                     return redirect('browse_page')
             else:
                 messages.error(request, "Invalid username or password. Please try again.")
@@ -209,4 +210,45 @@ def add_product_view(request):
         print(seller_id)
         return render(request, 'add_product.html', {'id': seller_id})
 
+
+
+def checkout_view(request):
+    cart_products = []
+    if request.method == 'POST':
+        cart_json = request.POST.get('cart_data', '[]')
+        try:
+            cart_list = json.loads(cart_json)
+        except ValueError:
+            cart_list = []
+
+        try:
+            with connection.cursor() as cursor:
+                for pid in cart_list:
+                    cursor.execute("""
+                        SELECT Name, Description, Price, Image
+                          FROM Products
+                         WHERE ProductID = %s
+                    """, [pid])
+                    row = cursor.fetchone()
+                    if row:
+                        name, description, price, image = row
+                        cart_products.append({
+                            'name': name,
+                            'description': description,
+                            'price': price,
+                            'image': image,
+                            'quantity': 1  # you can adjust if you support qty
+                        })
+        except IntegrityError:
+            messages.error(request, "An error occurred while loading your cart. Please try again.")
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {e}")
+
+    # Compute total
     
+    total = sum(item['price'] * item.get('quantity', 1) for item in cart_products)
+
+    return render(request, 'cart.html', {
+        'cart_products': cart_products,
+        'total': total,
+    })

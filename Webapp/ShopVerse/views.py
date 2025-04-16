@@ -22,3 +22,6 @@ def seller_page(request,id):
 
 def add_product(request):
     return add_product_view(request)
+
+def checkout_page(request):
+    return checkout_view(request)
