@@ -172,7 +172,6 @@
           <span id="summary-total-amount">${{ total|floatformat:2 }}</span>
         </div>
 
-        <!-- restored correct form tag -->
         <form id="checkout-form" action="{% url 'checkout' %}" method="post">
           {% csrf_token %}
           <input
@@ -193,62 +192,72 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      let cart = JSON.parse(document.getElementById('cart_data').value);
+    console.log("🔍 Checkout script start");
+    const raw = document.getElementById('cart_data').value;
+    console.log("raw cart_data value:", raw);
 
-      document.querySelectorAll('.qty-decrease').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const input = btn.nextElementSibling;
-          let val = parseInt(input.value, 10);
-          if (val > 1) {
-            input.value = --val;
-            const pid = btn.closest('.product-card').dataset.productId;
-            cart.find(x => x.id == pid).quantity = val;
-            recalcSummary();
-          }
-        });
-      });
+    let cart;
+    try {
+      cart = JSON.parse(raw);
+      console.log("parsed cart:", cart);
+    } catch (e) {
+      console.error("Failed to parse cart_data JSON:", e);
+      cart = [];
+    }
 
-      document.querySelectorAll('.qty-increase').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const input = btn.previousElementSibling;
-          let val = parseInt(input.value, 10);
-          input.value = ++val;
+    document.querySelectorAll('.qty-decrease').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.nextElementSibling;
+        let val = parseInt(input.value, 10);
+        if (val > 1) {
+          input.value = --val;
           const pid = btn.closest('.product-card').dataset.productId;
           cart.find(x => x.id == pid).quantity = val;
           recalcSummary();
-        });
+        }
       });
+    });
 
-      document.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const card = btn.closest('.product-card');
-          const pid = card.dataset.productId;
-          card.remove();
-          cart = cart.filter(x => x.id != pid);
-          const sumEl = document.querySelector(`.summary-item[data-product-id="${pid}"]`);
-          if (sumEl) sumEl.remove();
-          recalcSummary();
-        });
+    document.querySelectorAll('.qty-increase').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.previousElementSibling;
+        let val = parseInt(input.value, 10);
+        input.value = ++val;
+        const pid = btn.closest('.product-card').dataset.productId;
+        cart.find(x => x.id == pid).quantity = val;
+        recalcSummary();
       });
+    });
 
-      function recalcSummary() {
-        let total = 0;
-        document.querySelectorAll('.summary-item').forEach(div => {
-          const pid = div.dataset.productId;
-          const entry = cart.find(x => x.id == pid);
-          const price = parseFloat(div.querySelector('.item-total').textContent.replace('$',''));
-          const line = (price * entry.quantity).toFixed(2);
-          div.querySelector('span:last-child').textContent = '$' + line;
-          total += parseFloat(line);
-        });
-        document.getElementById('summary-total-amount').textContent = '$' + total.toFixed(2);
-      }
-
-      document.getElementById('finalize-btn').addEventListener('click', () => {
-        document.getElementById('cart_data').value = JSON.stringify(cart);
-        document.getElementById('checkout-form').submit();
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.product-card');
+        const pid = card.dataset.productId;
+        console.log("User clicked Remove on product:", pid);
+        card.remove();
+        cart = cart.filter(x => x.id != pid);
+        const sumEl = document.querySelector(`.summary-item[data-product-id="${pid}"]`);
+        if (sumEl) sumEl.remove();
+        recalcSummary();
       });
+    });
+
+    function recalcSummary() {
+      let total = 0;
+      document.querySelectorAll('.summary-item').forEach(div => {
+        const pid = div.dataset.productId;
+        const entry = cart.find(x => x.id == pid);
+        const price = parseFloat(div.querySelector('.item-total').textContent.replace('$',''));
+        const line = (price * entry.quantity).toFixed(2);
+        div.querySelector('span:last-child').textContent = '$' + line;
+        total += parseFloat(line);
+      });
+      document.getElementById('summary-total-amount').textContent = '$' + total.toFixed(2);
+    }
+
+    document.getElementById('finalize-btn').addEventListener('click', () => {
+      document.getElementById('cart_data').value = JSON.stringify(cart);
+      document.getElementById('checkout-form').submit();
     });
   </script>
 </body>

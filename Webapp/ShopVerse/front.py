@@ -246,7 +246,7 @@ def checkout_view(request):
 
     # Compute total
     
-    total = sum(item['price'] * item.get('quantity', 1) for item in cart_products)
+    total = sum(item['price'] * item.get('quantity') for item in cart_products)
 
     return render(request, 'cart.html', {
         'cart_products': cart_products,
