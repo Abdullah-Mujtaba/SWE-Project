@@ -141,12 +141,6 @@
                 <p class="product-price">${{ product.price }}</p>
                 <p class="product-description">{{ product.description }}</p>
 
-                <div class="quantity-control">
-                  <button class="qty-decrease" type="button">−</button>
-                  <input type="text" class="qty-input" value="{{ product.quantity }}" readonly>
-                  <button class="qty-increase" type="button">+</button>
-                </div>
-
                 <button class="remove-item" type="button">Remove</button>
               </div>
             </div>
@@ -178,7 +172,7 @@
             type="hidden"
             name="cart_data"
             id="cart_data"
-            value='{{ cart_data_json|escapejs }}'
+            value='{{ cart_data_json|escape }}'
           >
           <button
             type="button"
@@ -229,13 +223,16 @@
       });
     });
 
-    document.querySelectorAll('.remove-item').forEach(btn => {
+    document.querySelectorAll('.remove-item').forEach(btn => 
+    {
       btn.addEventListener('click', () => {
         const card = btn.closest('.product-card');
         const pid = card.dataset.productId;
+        console.log('Cart before remove:', JSON.stringify(cart));
         console.log("User clicked Remove on product:", pid);
         card.remove();
         cart = cart.filter(x => x.id != pid);
+        console.log('Cart after remove:', JSON.stringify(cart));
         const sumEl = document.querySelector(`.summary-item[data-product-id="${pid}"]`);
         if (sumEl) sumEl.remove();
         recalcSummary();

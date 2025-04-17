@@ -212,43 +212,55 @@ def add_product_view(request):
 
 
 
+import json
+from django.shortcuts import render
+from django.db import connection, IntegrityError
+from django.contrib import messages
+
 def checkout_view(request):
     cart_products = []
+    
     if request.method == 'POST':
         cart_json = request.POST.get('cart_data', '[]')
+        print(cart_json)
         try:
+            # cart_list is now a list of dicts: [{"id":"1","quantity":2}, ...]
             cart_list = json.loads(cart_json)
         except ValueError:
             cart_list = []
 
         try:
             with connection.cursor() as cursor:
-                for pid in cart_list:
+                for entry in cart_list:
+                    prod_id  = entry.get('id')
+                    quantity = entry.get('quantity', 1)
                     cursor.execute("""
-                        SELECT Name, Description, Price, Image
+                        SELECT ProductID, Name, Description, Price, Image
                           FROM Products
                          WHERE ProductID = %s
-                    """, [pid])
+                    """, [prod_id])
                     row = cursor.fetchone()
                     if row:
-                        name, description, price, image = row
+                        pid, name, description, price, image = row
                         cart_products.append({
-                            'name': name,
+                            'id':          str(pid),        # stringify so it matches data-product-id
+                            'name':        name,
                             'description': description,
-                            'price': price,
-                            'image': image,
-                            'quantity': 1  # you can adjust if you support qty
+                            'price':       price,           # unit price
+                            'image':       image,
+                            'quantity':    quantity,
                         })
         except IntegrityError:
             messages.error(request, "An error occurred while loading your cart. Please try again.")
         except Exception as e:
             messages.error(request, f"An unexpected error occurred: {e}")
 
-    # Compute total
-    
-    total = sum(item['price'] * item.get('quantity') for item in cart_products)
+    # Compute total using the passed‑in quantity
+    total = sum(item['price'] * item['quantity'] for item in cart_products)
 
     return render(request, 'cart.html', {
         'cart_products': cart_products,
         'total': total,
+        # if you need to re‑submit the JSON back to the JS for further edits:
+        'cart_data_json': json.dumps([{'id': p['id'], 'quantity': p['quantity']} for p in cart_products]),
     })
