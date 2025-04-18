@@ -355,6 +355,91 @@
 
   <div class="container">
     <div class="browse-container">
+
+      <div class="categories-sidebar">
+        <h2 class="sidebar-title">Categories</h2>
+
+        <!-- Button for All Categories -->
+        <button class="category-main" id="all-categories-btn">
+            <div>
+                <i class="fas fa-list category-icon"></i>
+                <span>All Categories</span>
+            </div>
+        </button>
+        
+        <ul class="categories-list">
+        <!-- Fashion Category -->
+        <li class="category-item">
+            <div class="category-main {% if selected_category == 'fashion' %}active expanded{% endif %}" data-category="fashion">
+            <div>
+                <i class="fas fa-tshirt category-icon"></i>
+                <span>Fashion</span>
+            </div>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <ul class="subcategories {% if selected_category == 'fashion' %}show{% endif %}">
+            <li class="subcategory-item {% if selected_subcategory == 'shoes' %}active{% endif %}" data-subcategory="shoes">Shoes</li>
+            <li class="subcategory-item {% if selected_subcategory == 'clothes' %}active{% endif %}" data-subcategory="clothes">Clothes</li>
+            <li class="subcategory-item {% if selected_subcategory == 'accessories' %}active{% endif %}" data-subcategory="accessories">Accessories</li>
+            <li class="subcategory-item {% if selected_subcategory == 'bags' %}active{% endif %}" data-subcategory="bags">Bags</li>
+            </ul>
+        </li>
+        
+        <!-- Electronics Category -->
+        <li class="category-item">
+            <div class="category-main {% if selected_category == 'electronics' %}active expanded{% endif %}" data-category="electronics">
+            <div>
+                <i class="fas fa-laptop category-icon"></i>
+                <span>Electronics</span>
+            </div>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <ul class="subcategories {% if selected_category == 'electronics' %}show{% endif %}">
+            <li class="subcategory-item {% if selected_subcategory == 'phones' %}active{% endif %}" data-subcategory="phones">Phones</li>
+            <li class="subcategory-item {% if selected_subcategory == 'laptops' %}active{% endif %}" data-subcategory="laptops">Laptops</li>
+            <li class="subcategory-item {% if selected_subcategory == 'audio' %}active{% endif %}" data-subcategory="audio">Audio</li>
+            <li class="subcategory-item {% if selected_subcategory == 'accessories' %}active{% endif %}" data-subcategory="accessories">Accessories</li>
+            </ul>
+        </li>
+        
+        <!-- Home & Living Category -->
+        <li class="category-item">
+            <div class="category-main {% if selected_category == 'home' %}active expanded{% endif %}" data-category="home">
+            <div>
+                <i class="fas fa-home category-icon"></i>
+                <span>Home & Living</span>
+            </div>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <ul class="subcategories {% if selected_category == 'home' %}show{% endif %}">
+            <li class="subcategory-item {% if selected_subcategory == 'furniture' %}active{% endif %}" data-subcategory="furniture">Furniture</li>
+            <li class="subcategory-item {% if selected_subcategory == 'decor' %}active{% endif %}" data-subcategory="decor">Decor</li>
+            <li class="subcategory-item {% if selected_subcategory == 'bedding' %}active{% endif %}" data-subcategory="bedding">Bedding</li>
+            <li class="subcategory-item {% if selected_subcategory == 'lighting' %}active{% endif %}" data-subcategory="lighting">Lighting</li>
+            </ul>
+        </li>
+        
+        <!-- Kitchen Category -->
+        <li class="category-item">
+            <div class="category-main {% if selected_category == 'kitchen' %}active expanded{% endif %}" data-category="kitchen">
+            <div>
+                <i class="fas fa-utensils category-icon"></i>
+                <span>Kitchen</span>
+            </div>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <ul class="subcategories {% if selected_category == 'kitchen' %}show{% endif %}">
+            <li class="subcategory-item {% if selected_subcategory == 'appliances' %}active{% endif %}" data-subcategory="appliances">Appliances</li>
+            <li class="subcategory-item {% if selected_subcategory == 'cookware' %}active{% endif %}" data-subcategory="cookware">Cookware</li>
+            <li class="subcategory-item {% if selected_subcategory == 'tableware' %}active{% endif %}" data-subcategory="tableware">Tableware</li>
+            <li class="subcategory-item {% if selected_subcategory == 'utensils' %}active{% endif %}" data-subcategory="utensils">Utensils</li>
+            </ul>
+        </li>
+        </ul>
+    </div> 
+
+
+
       <!-- … your sidebar here … -->
 
       <!-- Products Section -->
@@ -414,6 +499,78 @@
       </div>
     </div>
   </div>
+
+
+  <script>
+    // CATEGORY SELECTION & FORM UPDATE
+
+    // When a category header is clicked:
+    document.querySelectorAll('.category-main').forEach(function(categoryElement) {
+    categoryElement.addEventListener('click', function() {
+        // Remove active and expanded classes from all category elements
+        document.querySelectorAll('.category-main').forEach(function(el) {
+        el.classList.remove('active', 'expanded');
+        var sublist = el.nextElementSibling;
+        if (sublist && sublist.classList.contains('subcategories')) {
+            sublist.classList.remove('show');
+        }
+        });
+        // Mark the clicked category as active and show/hide its subcategories
+        this.classList.add('active');
+        var sublist = this.nextElementSibling;
+        if (sublist && sublist.classList.contains('subcategories')) {
+        if (this.classList.contains('expanded')) {
+            this.classList.remove('expanded');
+            sublist.classList.remove('show');
+        } else {
+            this.classList.add('expanded');
+            sublist.classList.add('show');
+        }
+        }
+        // Update the hidden field for selected category and clear any subcategory selection
+        var selectedCat = this.getAttribute('data-category');
+        document.getElementById('selected-category').value = selectedCat;
+        document.getElementById('selected-subcategory').value = '';
+    });
+    });
+    
+    // When a subcategory is clicked:
+    document.querySelectorAll('.subcategory-item').forEach(function(subcategoryElement) {
+    subcategoryElement.addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevent the category click from firing
+        // Remove active class from sibling subcategories
+        var siblings = this.parentElement.querySelectorAll('.subcategory-item');
+        siblings.forEach(function(el) {
+        el.classList.remove('active');
+        });
+        // Mark the clicked subcategory as active
+        this.classList.add('active');
+        // Update the hidden field for selected subcategory
+        document.getElementById('selected-subcategory').value = this.getAttribute('data-subcategory');
+        // Submit the form to send the CSRF token with selected category and subcategory
+        document.getElementById('category-form').submit();
+    });
+    });
+  </script>
+
+<!-- Script to handle "All Categories" button functionality -->
+  <script>
+    document.getElementById('all-categories-btn').addEventListener('click', function() {
+        // Reset the category and subcategory values
+        const categoryInput = document.getElementById('selected-category');
+        const subcategoryInput = document.getElementById('selected-subcategory');
+        
+        categoryInput.value = ''; // Reset category
+        subcategoryInput.value = ''; // Reset subcategory
+        
+        // Submit the form to reload the page with all products
+        document.getElementById('category-form').submit();
+    });
+  </script>
+
+
+
+
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
