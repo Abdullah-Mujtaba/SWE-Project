@@ -21,7 +21,10 @@ def browse_view(request):
     if not selected_category and not selected_subcategory:
         try:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT * FROM Products")  # Get all products
+                cursor.execute("""
+                    SELECT p.ProductID,p.SellerID, p.CategoryID, p.SubCategoryID, p.Name, p.Description, p.Price, p.Image, u.store_name 
+                    FROM Products p
+                    JOIN [User] u ON p.SellerID = u.UserID """)  # Get all products
                 products = cursor.fetchall()
                 print(f"Products found: {products}")
         except Exception as e:
@@ -61,8 +64,11 @@ def browse_view(request):
                 print(f"CategoryID: {category_id[0]}, SubCategoryID: {subcategory_id[0]}")
                 
                 # Now that we have both CategoryID and SubCategoryID, get the products
-                cursor.execute("""SELECT * FROM Products
-                                WHERE CategoryID = %s AND SubCategoryID = %s""",
+                cursor.execute("""SELECT p.ProductID,p.SellerID, p.CategoryID, p.SubCategoryID, p.Name, p.Description, p.Price, p.Image, u.store_name 
+                                FROM Products p
+                                JOIN [User] u ON p.SellerID = u.UserID 
+                                WHERE CategoryID = %s AND SubCategoryID = %s
+                                """,
                             [category_id[0], subcategory_id[0]])  # category_id[0] and subcategory_id[0] are the values
                 
                 products = cursor.fetchall()  # Use fetchall() to get all rows
