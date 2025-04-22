@@ -352,7 +352,14 @@
     <input type="hidden" name="selected_category"   id="selected-category"   value="{{ selected_category|default:'fashion' }}">
     <input type="hidden" name="selected_subcategory" id="selected-subcategory" value="{{ selected_subcategory|default:'shoes'  }}">
   </form>
-
+  <header style="display:flex;justify-content:flex-end;padding:1rem;">
+    {% if request.session.user_id %}
+      <a href="{% url 'logout_page' %}"
+         style="color:#9333EA;font-weight:600;text-decoration:none;">
+        Logout
+      </a>
+    {% endif %}
+  </header>
   <div class="container">
     <div class="browse-container">
 

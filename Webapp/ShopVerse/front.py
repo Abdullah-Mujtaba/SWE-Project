@@ -104,6 +104,9 @@ def login_view(request):
                 
             if row:
                 UserID, name, email , password, role, store_name = row
+                request.session['user_id']   = UserID
+                request.session['user_role'] = role
+                request.session['user_name'] = name
                 if(role == 'seller'):
                     return redirect('seller_page',id = UserID)
                 elif(role == 'customer' or role == 'user'):

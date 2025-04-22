@@ -79,8 +79,8 @@ DATABASES = {
         'ENGINE': 'mssql',
         'NAME': 'SWE',
         'USER': 'sa',
-        'PASSWORD': '123',
-        'HOST': 'localhost',
+        'PASSWORD': 'basil12345@',
+        'HOST': '127.0.0.1',
         'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',  # Make sure this driver is installed
@@ -127,7 +127,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "Shopverse/static",  # Ensure this is pointing to the correct directory
+    BASE_DIR / "ShopVerse/static",  # Ensure this is pointing to the correct directory
 ]
 
 # Default primary key field type

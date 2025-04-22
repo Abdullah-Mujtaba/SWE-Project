@@ -25,3 +25,7 @@ def add_product(request):
 
 def checkout_page(request):
     return checkout_view(request)
+
+def logout_page(request):
+    request.session.flush()         # clears *all* session data
+    return redirect('login_page')

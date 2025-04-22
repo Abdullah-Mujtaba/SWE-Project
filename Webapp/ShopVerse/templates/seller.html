@@ -134,6 +134,14 @@
   </style>
 </head>
 <body>
+  <header style="display:flex;justify-content:flex-end;padding:1rem;">
+    {% if request.session.user_id %}
+      <a href="{% url 'logout_page' %}"
+         style="color:#9333EA;font-weight:600;text-decoration:none;">
+        Logout
+      </a>
+    {% endif %}
+  </header>
   <div class="container">
     <!-- Seller Products Section -->
     <div class="products-section">
